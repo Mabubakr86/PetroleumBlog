@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import Post
+from .models import Post, Like, Comment
 
 
 def home(request):
@@ -31,6 +31,11 @@ class UserPostListView(ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Post.objects.filter(author=user).order_by('-created_at')
+
+    # def get_contex_data(self,*args,**kwargs):
+    #     context = super(UserPostListView, self).get_contex_data(*args,**kwargs)
+    #     context['likes'] = Like.objects.filter(liker=self.kwargs.get('username'),
+    #                                         post=self.get)
 
 
 class PostDetailView(DetailView):
@@ -78,4 +83,22 @@ def about(request):
 
 @login_required
 def like(request):
-    return redirect(reverse('post_list'))
+    user = request.user
+    if request.method == 'POST':
+        post_id = request.POST.get('post-id')
+        post = Post.objects.get(id=post_id)
+        print(post_id, post, user)
+        existing = Like.objects.filter(liker=user, post=post).exists()
+        print(existing)
+        if existing:
+            instance = Like.objects.get(liker=user, post=post)
+            print(instance)
+            if instance.value == 'like':
+                instance.value = 'unlike'
+                instance.save()
+            else:
+                instance.value = 'like'
+                instance.save()
+        else:
+            Like.objects.create(liker=user, post=post, value='like')
+    return redirect(reverse('home'))

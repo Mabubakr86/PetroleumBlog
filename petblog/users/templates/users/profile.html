@@ -15,7 +15,12 @@
                 <legend class="border-bottom mb-4">Profile Info</legend>
                 {{ u_form|crispy }}
                 {{ P_form|crispy}}
-
+                {{p_form.first_name|as_crispy_field}}
+                {{p_form.last_name|as_crispy_field}}
+                {{p_form.phone|as_crispy_field}}
+                {{p_form.company|as_crispy_field}}
+                {{p_form.profession_title|as_crispy_field}}
+                {{p_form.pic|as_crispy_field}}
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Update</button>

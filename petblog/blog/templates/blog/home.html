@@ -13,6 +13,22 @@
     </div>
     <h2><a class="article-title" href="{% url 'blog:post-detail' post.id%}">{{ post.title }}</a></h2>
     <p class="article-content">{{ post.content }}</p>
+    <hr>
+    <div class="row">
+      <div class="col-md-10">
+      </div>
+      <div class="col-md-2">
+        <form method="POST" action="{% url 'blog:like_post' %}">
+          {% csrf_token %}
+          <input type="hidden" name="post-id" value="{{post.id}}">
+          <button  type="submit" class="btn btn-link" style="font-size:20px">
+            <!-- <i class="fa fa-thumbs-down"></i> -->
+            <i class="fa fa-thumbs-up"></i>
+          </button>
+          {{post.like_set.all.count}}
+        </form>
+      </div>  
+    </div>
   </div>
 </article>
 

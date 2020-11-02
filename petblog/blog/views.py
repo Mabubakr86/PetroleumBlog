@@ -1,9 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import (ListView, DetailView,
                                   CreateView, UpdateView,
                                   DeleteView)
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from .models import Post
 
 
@@ -73,3 +75,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 def about(request):
     context = {'paragraph': 'Knowledge sharing road...'}
     return render(request, 'blog/about.html', context=context)
+
+@login_required
+def like(request):
+    return redirect(reverse('post_list'))

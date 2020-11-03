@@ -1,4 +1,5 @@
 {% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
   {% for post in posts %}
@@ -11,10 +12,6 @@
         </div>
         <h2><a class="article-title" href="{% url 'blog:post-detail' post.id%}">{{ post.title }}</a></h2>
         <p class="article-content">{{ post.content }}</p>
-        <div class="article-metadata">
-          <small class="text-muted" style="font-size: 15px">likes: {{post.get_no_of_post_likes}}</small>
-          <small class="text-muted ml-5" style="font-size:15px;">&nbsp;comments: 9</small>
-        </div>
         <div class="row">
           <div class="col-md-5">
             <form method="POST" action="{% url 'blog:like_post' %}">
@@ -31,12 +28,28 @@
             </form>
           </div>
           <div class="col-md-7">
-            <form>
-              <button type="submit" class="btn btn-link" style="font-size:17px">
-              <i class="fa fa-comment">  add comment</i>
-              </button>
-            </form>
+            <div class="article-metadata">
+              <small class="text-muted" style="font-size: 15px">likes: {{post.get_no_of_post_likes}}</small>
+              <small class="text-muted ml-5" style="font-size:15px;">&nbsp;comments: {{post.comment_set.all.count}}</small>
+            </div>
           </div>
+        </div>
+        <div>
+          <hr>
+          <h6>Comments</h6>
+          <div>
+            {% for comment in post.comment_set.all|slice:":2" %}
+            <p style="font-size:13px;">{{comment.content}}</p>
+            {% endfor %}
+            <a href="#">show more..</a>
+          </div>
+          <p></p>
+          <form method="POST" action="{% url 'blog:add_comment' %}">
+            {% csrf_token %}
+            <input type="hidden" name="post-id" value="{{post.id}}">
+            {{comment_form|crispy}}
+            <input type="submit" class="btn btn-link" value="add comment">
+          </form>
         </div>
       </div>
     </article>

@@ -2,16 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import (ListView, DetailView,
                                   CreateView, UpdateView,
                                   DeleteView)
+from django.views.generic.edit import ModelFormMixin, FormMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import Post, Like, Comment
-
-
-def home(request):
-    posts = Post.objects.all()
-    return render(request, 'blog/home.html', context={'posts': posts})
+from .forms import CommentForm
 
 
 class PostListView(ListView):
@@ -21,9 +18,11 @@ class PostListView(ListView):
     ordering = ['-created_at']
     paginate_by = 5
 
-
-
-
+    def get_context_data(self, **kwargs):
+        context = super(PostListView,self).get_context_data(**kwargs)
+        print(context)
+        context['comment_form'] = CommentForm()
+        return context  
 
 class UserPostListView(ListView):
     model = Post
@@ -34,11 +33,6 @@ class UserPostListView(ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Post.objects.filter(author=user).order_by('-created_at')
-
-    # def get_contex_data(self,*args,**kwargs):
-    #     context = super(UserPostListView, self).get_contex_data(*args,**kwargs)
-    #     context['likes'] = Like.objects.filter(liker=self.kwargs.get('username'),
-    #                                         post=self.get)
 
 
 class PostDetailView(DetailView):
@@ -101,4 +95,14 @@ def like(request):
                 instance.save()
         else:
             Like.objects.create(liker=user, post=post, value='like')
+    return redirect(reverse('home'))
+
+@login_required
+def add_comment(request):
+    user = request.user
+    if request.method == 'POST':
+        post_id = request.POST.get('post-id')
+        post = Post.objects.get(id=post_id)
+        content = request.POST.get('content')
+        Comment.objects.create(commenter=user,post=post,content=content)
     return redirect(reverse('home'))

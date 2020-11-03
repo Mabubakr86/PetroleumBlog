@@ -17,10 +17,6 @@ class Post(models.Model):
     def get_no_of_post_unlikes(self):
         return self.like_set.filter(value='unlike').count()
 
-    def last_user_post_interaction(self,user):
-        return self.like_set.filter(liker=user).value
-
-
     def __str__(self):
         return self.title
 

@@ -22,6 +22,9 @@ class PostListView(ListView):
     paginate_by = 5
 
 
+
+
+
 class UserPostListView(ListView):
     model = Post
     template_name = 'blog/user_posts.html'
@@ -87,12 +90,9 @@ def like(request):
     if request.method == 'POST':
         post_id = request.POST.get('post-id')
         post = Post.objects.get(id=post_id)
-        print(post_id, post, user)
         existing = Like.objects.filter(liker=user, post=post).exists()
-        print(existing)
         if existing:
             instance = Like.objects.get(liker=user, post=post)
-            print(instance)
             if instance.value == 'like':
                 instance.value = 'unlike'
                 instance.save()

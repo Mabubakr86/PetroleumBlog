@@ -11,6 +11,15 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def get_no_of_post_likes(self):
+        return self.like_set.filter(value='like').count()
+
+    def get_no_of_post_unlikes(self):
+        return self.like_set.filter(value='unlike').count()
+
+    def last_user_post_interaction(self,user):
+        return self.like_set.filter(liker=user).value
+
 
     def __str__(self):
         return self.title
@@ -39,7 +48,7 @@ class Like(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.post.title} {self.value}'
+        return f'{self.post.title} {self.value} by {self.liker}'
 
 
 

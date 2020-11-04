@@ -6,11 +6,24 @@
     <article class="media content-section">
       <img class="rounded-circle article-img" src="{{ post.author.profile.pic.url}}">
       <div class="media-body">
-        <div class="article-metadata">
+        <div class="article-metadata mb-2">
           <a class="mr-2" href="{% url 'blog:user-posts' post.author.username %}">{{ post.author }}</a>
           <small class="text-muted">{{ post.created_at|date:'F d, Y' }}</small>
         </div>
-        <h2><a class="article-title" href="{% url 'blog:post-detail' post.id%}">{{ post.title }}</a></h2>
+        <div class="row">
+          <div class="col-md-10">
+            <h2><a class="article-title" href="{% url 'blog:post-detail' post.id%}">{{ post.title }}</a></h2>
+          </div>
+          <div class="col-md-2">
+            {% ifequal user post.author %}
+              <a href="{% url 'blog:post-update' post.pk %}" class="mr-3"><i class='fas fa-pencil-alt' style='font-size:20px;color:red'></i>
+              </a>
+              <a href="{% url 'blog:post-delete' post.pk %}">
+                <i class='fas fa-trash-alt' style='font-size:20px;color:red'></i>
+              </a>
+            {% endifequal %}
+          </div>
+        </div>
         <p class="article-content">{{ post.content }}</p>
         <div class="row">
           <div class="col-md-5">
@@ -37,9 +50,12 @@
         <div>
           <hr>
           <h6>Comments</h6>
+          <button onclick="showOrHideDiv()" class="showbtn">show or hide comments</button>
           <div>
             {% for comment in post.comment_set.all|slice:":2" %}
-            <p style="font-size:13px;">{{comment.content}}</p>
+              <div class="showOrHide">
+                <p style="font-size:13px;">{{comment.content}}</p>
+              </div>
             {% endfor %}
             <a href="#">show more..</a>
           </div>

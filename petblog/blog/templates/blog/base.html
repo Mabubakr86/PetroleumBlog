@@ -72,36 +72,45 @@
 </main>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-    <!--     <script>function myFunction(x) {x.classList.replace("fa fa-thumbs-up","fa fa-thumbs-down");}</script> -->
-<!--     <script>
-       function showOrHideDiv() {
-          var v = document.getElementById("showOrHide");
-          if (v.style.display === "none") {
-             v.style.display = "block";
-          } else {
-             v.style.display = "none";
-          }
-       }
-    </script> -->
-<!--     <script >
-      $(document).ready(function(){
-        let display=false;
-        $(".showbtn").click(function(){
-          if (display===false){
-            $(this).next(".showOrHide").show(slow);
-            display=true
-          }else{
-            $(this).next(".showOrHide").hide(slow);
-            display=true
-          }
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script>
+      $(document).ready(function(){ 
+        $(".like-form").submit(function(e){
+          e.preventDefault()
+          const post_id = $(this).attr('id') 
+
+          const like_btn = $(`.like-btn${post_id}`)[0]
+          const likes_count = $(`.likescount${post_id}`)[0]
+
+          $.ajax({
+            type:'POST',
+            url:$(this).attr('action'),
+            data:{
+              'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+              'post_id' : post_id,
+
+            },
+            success:function(response){
+              console.log(response)
+              if (response['value'] === 'like'){
+                  console.log('unlike')
+                  like_btn.innerHTML = `<i class="fa fa-thumbs-down"> unlike</i>`
+                  likes_count.innerHTML = `<small>${response['count']}</small>`
+              }else{
+                  console.log('like')
+                  like_btn.innerHTML = `<i class="fa fa-thumbs-up"> like</i>`
+                  likes_count.innerHTML = ` ${response['count']}`
+
+              }
+
+            }
+          })
+
         })
-      });
-
-    </script> -->
-<script src='https://kit.fontawesome.com/a076d05399.js'></script>
-
+      })
+    </script>
 </body>
 </html>

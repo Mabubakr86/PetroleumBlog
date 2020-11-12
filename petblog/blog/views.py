@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import Post, Like, Comment
 from .forms import CommentForm
+from django.http import JsonResponse
 
 
 class PostListView(ListView):
@@ -79,10 +80,14 @@ def about(request):
 @login_required
 def like(request):
     user = request.user
+    print(user)
     if request.method == 'POST':
-        post_id = request.POST.get('post-id')
+        post_id = request.POST.get('post_id')
+        print(post_id)
         post = Post.objects.get(id=post_id)
+        print(post)
         existing = Like.objects.filter(liker=user, post=post).exists()
+        value = 'like'
         if existing:
             instance = Like.objects.get(liker=user, post=post)
             if instance.value == 'like':
@@ -91,8 +96,14 @@ def like(request):
             else:
                 instance.value = 'like'
                 instance.save()
+            value = instance.value
         else:
             Like.objects.create(liker=user, post=post, value='like')
+
+        likes_count = Like.objects.filter(post=post, value='like').count()
+
+
+        return JsonResponse(data={'value':value,'count':likes_count}, safe=False)
     return redirect(reverse('home'))
 
 @login_required

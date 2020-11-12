@@ -26,65 +26,58 @@
         </div>
         <p class="article-content">{{ post.content }}</p>
         <div class="row">
-          <div class="col-md-5">
-            <form method="POST" action="{% url 'blog:like_post' %}">
-              {% csrf_token %}
-              <input type="hidden" name="post-id" value="{{post.id}}">
-              <button  type="submit" class="btn btn-link" style="font-size:17px">
-              {% get_last_like_status post user as value %}
-              {% if value %}
-                <i class="fa fa-thumbs-down"> unlike</i>
-              {% else %}
+            <div class="col-md-7">
+              <form method="POST" action="{% url 'blog:like_post' %}" class="like-form" id="{{post.id}}">
+                {% csrf_token %}
+                <input type="hidden" name="post-id" value="{{post.id}}">
+                <button  type="submit" class="btn btn-link like-btn{{post.id}}" style="font-size:17px">
                 <i class="fa fa-thumbs-up"> like</i>
-              {% endif %}
-              </button>
-            </form>
-          </div>
-          <div class="col-md-7">
-            <div class="article-metadata">
-              <small class="text-muted" style="font-size: 15px">likes: {{post.get_no_of_post_likes}}</small>
+                </button>
+              </form>
+            </div>
+            <div class="col-md-5">
+              <small class="text-muted" style="font-size: 15px">likes:<small class="text-muted likescount{{post.id}}" style="font-size:17px;"> 0</small></small>
               <small class="text-muted ml-5" style="font-size:15px;">&nbsp;comments: {{post.comment_set.all.count}}</small>
             </div>
           </div>
-        </div>
-        <div>
-          <hr>
-          <h6>Comments</h6>
-          <button onclick="showOrHideDiv()" class="showbtn">show or hide comments</button>
           <div>
-            {% for comment in post.comment_set.all|slice:":2" %}
-              <div class="showOrHide">
-                <p style="font-size:13px;">{{comment.content}}</p>
-              </div>
-            {% endfor %}
-            <a href="#">show more..</a>
+            <hr>
+            <h6>Comments</h6>
+            <button onclick="showOrHideDiv()" class="showbtn">show or hide comments</button>
+            <div>
+              {% for comment in post.comment_set.all|slice:":2" %}
+                <div class="showOrHide">
+                  <p style="font-size:13px;">{{comment.content}}</p>
+                </div>
+              {% endfor %}
+              <a href="#">show more..</a>
+            </div>
+            <p></p>
+            <form method="POST" action="{% url 'blog:add_comment' %}">
+              {% csrf_token %}
+              <input type="hidden" name="post-id" value="{{post.id}}">
+              {{comment_form|crispy}}
+              <input type="submit" class="btn btn-link" value="add comment">
+            </form>
           </div>
-          <p></p>
-          <form method="POST" action="{% url 'blog:add_comment' %}">
-            {% csrf_token %}
-            <input type="hidden" name="post-id" value="{{post.id}}">
-            {{comment_form|crispy}}
-            <input type="submit" class="btn btn-link" value="add comment">
-          </form>
         </div>
-      </div>
-    </article>
-  {% endfor %}
-  {% if is_paginated %}
-    {% if page_obj.has_previous %}
-      <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-      <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-    {% endif %}
-    {% for num in page_obj.paginator.page_range %}
-      {% if page_obj.number == num %}
-        <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-        <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-      {% endif %}
+      </article>
     {% endfor %}
-    {% if page_obj.has_next %}
-      <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-      <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% if is_paginated %}
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
     {% endif %}
-  {% endif %}
-{% endblock %}
+  {% endblock %}
